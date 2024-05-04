@@ -1,32 +1,68 @@
+import { useState, ChangeEvent } from "react" //se importa ChangeEvent de react
 import { categories } from "../data/categorias"
 
 const Form = () => {
+
+    const [activity, setActivity] = useState({
+        category: 1,
+        name: '',
+        calories: 0
+    })
+
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+        //lo que hacemos aca es mantener una copia del objeto que hay en el state
+        //y reescribir solo el campo que cambia
+        //si no hacia la copia del state (objeto activity) lo que habia en el state cambia cada vez que el usuario cambie o escriba algo
+        /**
+         * const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) 
+         * recibe un parametro (e) que puede ser de tipo elemento html Input o de tipo Select
+         */
+
+
+        setActivity({
+            ...activity,
+            [e.target.id]: e.target.value
+        })
+    }
     return (
         <form
             className="spcace-y-5 bg-white shadow p-10 rounded-lg">
+
             <div className="grid grid-cols-1 gap-3">
-                <label htmlFor="name" className="font-bold">Categoria:</label>
+
+                <label htmlFor="category" className="font-bold">
+                    Categoria:
+                </label>
+
                 <select
                     className="border border-gray-300 p-2 rounded-xl w-full"
-                    id="name">
-                    {categories.map(category => (
-                        <option key={category.id}
-                            value={category.id}
+                    id="category"
+                    value={activity.category}
+                    onChange={handleChange}>
 
-                        >
-                            {category.name}
-                        </option>
-                    ))}
+                    {
+                        categories.map(category => (
+                            <option
+                                key={category.id}
+                                value={category.id}
+                            >
+                                {category.name}
+                            </option>
+                        ))}
 
                 </select>
             </div>
             <div className="grid grid-cols-1 gap-3 pt-6">
-                <label htmlFor="activity" className="font-bold">Actividad:</label>
+                <label htmlFor="name" className="font-bold">Actividad:</label>
                 <input
                     type="text"
-                    id="activity"
+                    id="name"
                     className="border border-gray-300 p-2 rounded-xl w-full"
-                    placeholder="Ej. Comida, Jugo de naranja, Ejercicios, Pesas, etc." />
+                    placeholder="Ej. Comida, Jugo de naranja, Ejercicios, Pesas, etc."
+                    value={activity.name}
+                    onChange={handleChange}
+                />
             </div>
             <div className="grid grid-cols-1 gap-3 pt-6">
                 <label htmlFor="calories" className="font-bold">Calorias:</label>
@@ -34,7 +70,10 @@ const Form = () => {
                     type="number"
                     id="calories"
                     className="border border-gray-300 p-2 rounded-xl w-full"
-                    placeholder="Ej. 200, 500, 750, 1000" />
+                    placeholder="Ej. 200, 500, 750, 1000"
+                    value={activity.calories}
+                    onChange={handleChange}
+                />
             </div>
             <div className="pt-2">
                 <input

@@ -1,9 +1,10 @@
 import { useState, ChangeEvent } from "react" //se importa ChangeEvent de react
+import { Activity } from "../types/index"
 import { categories } from "../data/categorias"
 
 const Form = () => {
 
-    const [activity, setActivity] = useState({
+    const [activity, setActivity] = useState<Activity>({
         category: 1,
         name: '',
         calories: 0
@@ -18,11 +19,33 @@ const Form = () => {
          * const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) 
          * recibe un parametro (e) que puede ser de tipo elemento html Input o de tipo Select
          */
-
+        /**
+             * lo que ocurre en este caso es que el elemento category y calories son number en primera instancia
+             *  y se transfoman en string cuando
+             * cambia el state por eso hay que convertirlos a number nuevamente.
+             * 
+            ...activity,
+            [e.target.id]: e.target.value
+            */
+        /**--------------------------------------------------------------------------------------------------------------- */
+       
+        const isNumberField = ['category', 'calories'].includes(e.target.id)
+         /**
+         * Con esta linea identificamos mediante el id del elenmento pertenece a la lista de id de entrada que se definio 
+         * en ['category', 'calories'] en conclusion el resultado sera true si el id coincide con category o calories
+         * y false en caso que sea name
+         */
 
         setActivity({
             ...activity,
-            [e.target.id]: e.target.value
+            /**
+             * hacemos una copia de lo que hay en el state
+             * pregunto si isNumberField es true o false
+             * si es true lo convertimos a number
+             * si es false lo dejamos como esta
+             * si es false lo dejamos como esta
+             */
+            [e.target.id]: isNumberField ? +e.target.value : e.target.value
         })
     }
     return (

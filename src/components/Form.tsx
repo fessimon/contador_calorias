@@ -1,14 +1,20 @@
-import { useState, ChangeEvent } from "react" //se importa ChangeEvent de react
+import { useState, ChangeEvent, FormEvent, Dispatch } from "react" //se importa ChangeEvent de react
 import { Activity } from "../types/index"
 import { categories } from "../data/categorias"
+import { ActivityActions } from "../reducers/activity-reducer"
 
-const Form = () => {
+type FormProps = {
+    dispatch: Dispatch<ActivityActions>
+}
+const initialState = {
+    category: 1,
+    name: '',
+    calories: 0
+}
 
-    const [activity, setActivity] = useState<Activity>({
-        category: 1,
-        name: '',
-        calories: 0
-    })
+const Form = ({ dispatch }: FormProps) => {
+
+    const [activity, setActivity] = useState<Activity>(initialState)
 
 
     const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
@@ -28,13 +34,14 @@ const Form = () => {
             [e.target.id]: e.target.value
             */
         /**--------------------------------------------------------------------------------------------------------------- */
-       
+
         const isNumberField = ['category', 'calories'].includes(e.target.id)
-         /**
-         * Con esta linea identificamos mediante el id del elenmento pertenece a la lista de id de entrada que se definio 
-         * en ['category', 'calories'] en conclusion el resultado sera true si el id coincide con category o calories
-         * y false en caso que sea name
-         */
+        /**
+        * Con esta linea identificamos mediante el id del elenmento pertenece a la lista de id de entrada que se definio 
+        * en ['category', 'calories'] en conclusion el resultado sera true si el id coincide con category o calories
+        * y false en caso que sea name
+        */
+
 
         setActivity({
             ...activity,
@@ -48,9 +55,30 @@ const Form = () => {
             [e.target.id]: isNumberField ? +e.target.value : e.target.value
         })
     }
+    const isValidField = () => {
+        const { name, calories } = activity //extraigo nombre y calorias porque categoria siempre esta seleccionada
+        return name.trim() !== '' && calories > 0 //valido que el nombre no este vacio y que la categoria sea mayor a 0
+        /**
+         * lo que hace el .trim es quitar los espacios en blancoos de un string y luego valida que no este vacio
+         * y por ultimo valida que calories sea mayor a 0
+         * si estas condiciones se cumplieron es porque el formulario es valido y devuelve true
+         */
+    }
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        dispatch({
+            type: 'save-activity',
+            payload: { newActivity: activity }
+        })
+
+        setActivity(initialState)
+
+    }
     return (
         <form
-            className="spcace-y-5 bg-white shadow p-10 rounded-lg">
+            className="spcace-y-5 bg-white shadow p-10 rounded-lg"
+            onSubmit={handleSubmit}>
 
             <div className="grid grid-cols-1 gap-3">
 
@@ -63,7 +91,6 @@ const Form = () => {
                     id="category"
                     value={activity.category}
                     onChange={handleChange}>
-
                     {
                         categories.map(category => (
                             <option
@@ -85,6 +112,7 @@ const Form = () => {
                     placeholder="Ej. Comida, Jugo de naranja, Ejercicios, Pesas, etc."
                     value={activity.name}
                     onChange={handleChange}
+
                 />
             </div>
             <div className="grid grid-cols-1 gap-3 pt-6">
@@ -96,18 +124,18 @@ const Form = () => {
                     placeholder="Ej. 200, 500, 750, 1000"
                     value={activity.calories}
                     onChange={handleChange}
+
                 />
             </div>
             <div className="pt-2">
                 <input
                     type="submit"
-                    value="Guardar Comida o Ejercicio"
-                    className="bg-gray-800 hover:bg-gray-900 w-full p-2 font-bold uppercase text-white cursor-pointer rounded-lg" />
+                    value={activity.category === 1 ? "Guardar Comida" : "Guardar Ejercicio"} //actualiza el boton segun lo seleccionado y se agrega disable:opacity-10
+                    className="bg-gray-800 hover:bg-gray-900 w-full p-2 font-bold uppercase text-white cursor-pointer rounded-lg disabled:opacity-10"
+                    disabled={!isValidField()}//valida que el formulario sea valido == true si es asi desabilita el boton
+                />
             </div>
-
-
         </form>
     )
 }
-
 export default Form

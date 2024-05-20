@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, FormEvent, Dispatch } from "react" //se importa ChangeEvent de react
+import { v4 as uuidv4 } from 'uuid'
 import { Activity } from "../types/index"
 import { categories } from "../data/categorias"
 import { ActivityActions } from "../reducers/activity-reducer"
@@ -6,7 +7,8 @@ import { ActivityActions } from "../reducers/activity-reducer"
 type FormProps = {
     dispatch: Dispatch<ActivityActions>
 }
-const initialState = {
+const initialState : Activity = {
+    id: uuidv4(),
     category: 1,
     name: '',
     calories: 0
@@ -17,7 +19,7 @@ const Form = ({ dispatch }: FormProps) => {
     const [activity, setActivity] = useState<Activity>(initialState)
 
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement> ) => {
         //lo que hacemos aca es mantener una copia del objeto que hay en el state
         //y reescribir solo el campo que cambia
         //si no hacia la copia del state (objeto activity) lo que habia en el state cambia cada vez que el usuario cambie o escriba algo
@@ -35,7 +37,7 @@ const Form = ({ dispatch }: FormProps) => {
             */
         /**--------------------------------------------------------------------------------------------------------------- */
 
-        const isNumberField = ['category', 'calories'].includes(e.target.id)
+       // const isNumberField = ['category', 'calories'].includes(e.target.id)
         /**
         * Con esta linea identificamos mediante el id del elenmento pertenece a la lista de id de entrada que se definio 
         * en ['category', 'calories'] en conclusion el resultado sera true si el id coincide con category o calories
@@ -52,7 +54,7 @@ const Form = ({ dispatch }: FormProps) => {
              * si es false lo dejamos como esta
              * si es false lo dejamos como esta
              */
-            [e.target.id]: isNumberField ? +e.target.value : e.target.value
+            [e.target.id]: e.target.value
         })
     }
     const isValidField = () => {
@@ -72,7 +74,10 @@ const Form = ({ dispatch }: FormProps) => {
             payload: { newActivity: activity }
         })
 
-        setActivity(initialState)
+        setActivity({
+            ...initialState,
+            id:uuidv4()
+        })
 
     }
     return (
